@@ -11,8 +11,12 @@ import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHel
 import { SpotLight as ThreeSpotLight } from "three";
 import { EffectComposer, N8AO } from "@react-three/postprocessing";
 
-const Model = () => {
-  const { scene } = useGLTF("/room.glb");
+
+interface ModelProps {
+    basePath: string;
+  }
+const Model: React.FC<ModelProps> = ({ basePath }) => {
+  const { scene } = useGLTF(`${basePath}/room.glb`);
   return <primitive object={scene} />;
 };
 
@@ -91,7 +95,10 @@ const CustomSpotLight: React.FC<CustomSpotLightProps> = ({
   );
 };
 
-const VirtualSpace = () => {
+interface VirtualSpaceProps {
+    basePath: string;
+  }
+const VirtualSpace: React.FC<ModelProps> = ({ basePath }) => {
   const [backgroundColor, setBackgroundColor] = useState("hsl(270, 50%, 50%)");
 
   return (
@@ -183,7 +190,7 @@ const VirtualSpace = () => {
         <pointLight position={[-4.7, 3, -3.9 / 2]} intensity={2} color={0xffffff}/>
         <pointLight position={[3.9 / 2, 3, 4.7]} intensity={2} color={0xffffff}/>
         <pointLight position={[-3.9 / 2, 3, 4.7]} intensity={2} color={0xffffff}/> */}
-        <Model />
+        <Model basePath={basePath}/>
         <OrbitControls
           maxAzimuthAngle={+120 * (Math.PI / 180)}
           minAzimuthAngle={-120 * (Math.PI / 180)}
