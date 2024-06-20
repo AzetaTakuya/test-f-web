@@ -16,10 +16,9 @@ interface ModelProps {
   onProgress: (progress: number) => void;
 }
 const Model: React.FC<ModelProps> = ({ basePath, onProgress }) => {
-    const url = `${basePath}/room.glb`;
     const size = 61473688;
 
-    const gltf = useLoader(GLTFLoader, `${basePath}/room.glb`, undefined, (xhr) => {
+    const gltf = useLoader(GLTFLoader, `${basePath}/room-compression4.glb`, undefined, (xhr) => {
             const percentage = parseFloat(((xhr.loaded) / (size) * 100).toFixed(0));
             onProgress(percentage);
 
