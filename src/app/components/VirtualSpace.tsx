@@ -171,15 +171,17 @@ const Box = ({ index, ...props }: BoxProps) => {
 
 interface VirtualSpaceProps {
   basePath: string;
+  onProgress: (progress: number) => void;
 }
-const VirtualSpace: React.FC<ModelProps> = ({ basePath }) => {
+const VirtualSpace: React.FC<ModelProps> = ({ basePath, onProgress }) => {
   const [backgroundColor, setBackgroundColor] = useState("hsl(0, 0%, 100%)");
 
   const { progress } = useProgress();
 
   useEffect(() => {
     console.log(`Loading progress: ${progress}%`);
-  }, [progress]);
+    onProgress(progress);
+  }, [progress, onProgress]);
 
   return (
     <div style={{ width: "100vw", height: "100vh", backgroundColor }}>
