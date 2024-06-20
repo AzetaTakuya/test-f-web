@@ -35,7 +35,7 @@ const AreaLight: React.FC<AreaLightProps> = ({
   const { scene } = useThree();
 
   React.useEffect(() => {
-    const rectLight = new THREE.RectAreaLight(0xffffff, 20, width, height);
+    const rectLight = new THREE.RectAreaLight(0xffffff, 10, width, height);
     rectLight.position.set(...position);
     rectLight.lookAt(...lookAt);
 
@@ -104,7 +104,7 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath }) => {
   return (
     <div style={{ width: "100vw", height: "100vh", backgroundColor }}>
       <Canvas camera={{ fov: 40 }}>
-        <ambientLight intensity={1.0} />
+        <ambientLight intensity={3} />
         {/* <directionalLight intensity={3} position={[5, 5, -5]} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024}/> */}
         <Environment preset="night" />
         <AreaLight
@@ -140,56 +140,47 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath }) => {
           intensity={1}
           distance={0}
         />
-        <pointLight position={[-1.5, 0, -1.5]} intensity={7} color={0xffffff} />
+        {/* <pointLight position={[-1.5, 0, -1.5]} intensity={0} color={0xffffff} /> */}
+        {/* <pointLight position={[1.5, 0, -1.5]} intensity={0} color={0xffffff} /> */}
+        {/* <pointLight position={[-1.5, 0, 1.5]} intensity={0} color={0xffffff} /> */}
+        {/* <pointLight position={[1.5, 0, 1.5]} intensity={0} color={0xffffff} /> */}
         <CustomSpotLight
           position={[-1.5, 2.5, -1.5]}
           targetPosition={[0, -1, 0]}
           color="white"
           angle={1.35}
           penumbra={0.1}
-          intensity={10}
+          intensity={1}
           distance={0}
         />
-        <pointLight position={[1.5, 0, -1.5]} intensity={7} color={0xffffff} />
         <CustomSpotLight
           position={[1.5, 2.5, -1.5]}
           targetPosition={[0, -1, 0]}
           color="white"
           angle={1.35}
           penumbra={0.1}
-          intensity={10}
+          intensity={1}
           distance={0}
         />
-        <pointLight position={[-1.5, 0, 1.5]} intensity={7} color={0xffffff} />
         <CustomSpotLight
           position={[-1.5, 2.5, 1.5]}
           targetPosition={[0, -1, 0]}
           color="white"
           angle={1.35}
           penumbra={0.1}
-          intensity={10}
+          intensity={1}
           distance={0}
         />
-        <pointLight position={[1.5, 0, 1.5]} intensity={7} color={0xffffff} />
         <CustomSpotLight
           position={[1.5, 2.5, 1.5]}
           targetPosition={[0, -1, 0]}
           color="white"
           angle={1.35}
           penumbra={0.1}
-          intensity={10}
+          intensity={1}
           distance={0}
         />
 
-        {/* <pointLight position={[4.7, 3, 3.9 / 2]} intensity={10} color={0xffffff}/>
-        <pointLight position={[4.7, 3, -3.9 / 2]} intensity={10} color={0xffffff}/>
-        <pointLight position={[3.9 / 2, 3, -4.7]} intensity={10} color={0xffffff}/>
-        <pointLight position={[-3.9 / 2, 3, -4.7]} intensity={10} color={0xffffff}/>
-
-        <pointLight position={[-4.7, 3, 3.9 / 2]} intensity={2} color={0xffffff}/>
-        <pointLight position={[-4.7, 3, -3.9 / 2]} intensity={2} color={0xffffff}/>
-        <pointLight position={[3.9 / 2, 3, 4.7]} intensity={2} color={0xffffff}/>
-        <pointLight position={[-3.9 / 2, 3, 4.7]} intensity={2} color={0xffffff}/> */}
         <Model basePath={basePath}/>
         <OrbitControls
           maxAzimuthAngle={+120 * (Math.PI / 180)}
