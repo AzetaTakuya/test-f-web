@@ -1,11 +1,10 @@
 // components/StartPage.js
 "use client";
-
-import React, { useRef, useEffect, useState, useMemo } from "react";
+import React, { useRef, useEffect, useState, useMemo, RefObject  } from "react";
 import { useSearchParams } from "next/navigation";
 import * as THREE from "three";
 import { Canvas, useThree, useFrame, useLoader } from "@react-three/fiber";
-import { OrbitControls, useGLTF } from "@react-three/drei";
+import { OrbitControls, useGLTF, useProgress } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Environment, SpotLight, Text } from "@react-three/drei";
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper.js";
@@ -14,10 +13,22 @@ import { EffectComposer, N8AO } from "@react-three/postprocessing";
 
 interface ModelProps {
   basePath: string;
+  onProgress: (progress: number) => void;
 }
-const Model: React.FC<ModelProps> = ({ basePath }) => {
-  const { scene } = useGLTF(`${basePath}/room.glb`);
-  return <primitive object={scene} />;
+const Model: React.FC<ModelProps> = ({ basePath, onProgress }) => {
+    const url = `${basePath}/room.glb`;
+    const size = 61473688;
+
+    const gltf = useLoader(GLTFLoader, `${basePath}/room.glb`, undefined, (xhr) => {
+            const percentage = parseFloat(((xhr.loaded) / (size) * 100).toFixed(0));
+            onProgress(percentage);
+
+        }
+    )
+
+    return (
+        <primitive object={gltf.scene} />
+    );
 };
 
 interface AreaLightProps {
@@ -94,6 +105,7 @@ const CustomSpotLight: React.FC<CustomSpotLightProps> = ({
     />
   );
 };
+
 interface VerticalTextProps {
   text: string;
   position: [number, number, number];
@@ -125,6 +137,7 @@ const VerticalText: React.FC<VerticalTextProps> = ({
     </>
   );
 };
+
 type BoxProps = JSX.IntrinsicElements["mesh"] & { index: string };
 const Box = ({ index, ...props }: BoxProps) => {
   const [hovered, setHover] = useState(false);
@@ -168,17 +181,71 @@ const Box = ({ index, ...props }: BoxProps) => {
   );
 };
 
+interface ResizeHandlerProps {
+  containerRef: RefObject<HTMLDivElement>;
+  setAspect: React.Dispatch<React.SetStateAction<number>>;
+}
+const ResizeHandler: React.FC<ResizeHandlerProps> = ({ containerRef, setAspect }) => {
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        const width = containerRef.current.clientWidth;
+        const height = containerRef.current.clientHeight;
+        const aspect = Math.min(width / height, 1);
+        setAspect(aspect);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+  }, [containerRef, setAspect]);
+
+  return <></>;
+};
+interface SceneProps {
+  aspect: number;
+}
+
+const Scene: React.FC<SceneProps> = ({ aspect }) => {
+  const { camera } = useThree();
+  useEffect(() => {
+    const perspectiveCamera = camera as THREE.PerspectiveCamera;
+    perspectiveCamera.fov = Math.min(40 / aspect, 90);
+    console.log(perspectiveCamera.fov);
+
+    perspectiveCamera.updateProjectionMatrix();
+  }, [aspect, camera]);
+
+  return <></>;
+};
+
+
+
 interface VirtualSpaceProps {
   basePath: string;
+  onProgress: (progress: number) => void;
 }
-const VirtualSpace: React.FC<ModelProps> = ({ basePath }) => {
-  const [backgroundColor, setBackgroundColor] = useState("hsl(270, 50%, 50%)");
+const VirtualSpace: React.FC<ModelProps> = ({ basePath, onProgress }) => {
+  const [backgroundColor, setBackgroundColor] = useState("hsl(0, 0%, 100%)");
+
+  const { progress } = useProgress();
+
+  useEffect(() => {
+    if(progress >= 100){
+        onProgress(101);
+    }
+  }, [progress, onProgress]);
+
+  const containerRef: RefObject<HTMLDivElement> = useRef<HTMLDivElement>(null);
+  const [aspect, setAspect] = useState(1);
 
   return (
-    <div style={{ width: "100vw", height: "100vh", backgroundColor }}>
+    <div ref={containerRef} style={{ width: "100vw", height: "100vh", backgroundColor }}>
+      <ResizeHandler containerRef={containerRef} setAspect={setAspect} />
       <Canvas camera={{ fov: 40 }}>
+        <Scene aspect={aspect} />
         <ambientLight intensity={3} />
-        {/* <directionalLight intensity={3} position={[5, 5, -5]} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024}/> */}
         <Environment preset="night" />
         <AreaLight
           position={[0, 2.19, -4.6]}
@@ -213,10 +280,6 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath }) => {
           intensity={1}
           distance={0}
         />
-        {/* <pointLight position={[-1.5, 0, -1.5]} intensity={0} color={0xffffff} /> */}
-        {/* <pointLight position={[1.5, 0, -1.5]} intensity={0} color={0xffffff} /> */}
-        {/* <pointLight position={[-1.5, 0, 1.5]} intensity={0} color={0xffffff} /> */}
-        {/* <pointLight position={[1.5, 0, 1.5]} intensity={0} color={0xffffff} /> */}
         <CustomSpotLight
           position={[-1.5, 2.5, -1.5]}
           targetPosition={[0, -1, 0]}
@@ -254,7 +317,7 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath }) => {
           distance={0}
         />
 
-        <Model basePath={basePath} />
+        <Model basePath={basePath} onProgress={onProgress} />
         <OrbitControls
           maxAzimuthAngle={+120 * (Math.PI / 180)}
           minAzimuthAngle={-120 * (Math.PI / 180)}
@@ -272,21 +335,20 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath }) => {
         </EffectComposer>
         <VerticalText
           text="浮世絵デジタル美術展"
-          position={[-1 - 0.3, 0.1, -4.9]}
+          position={[-1 - 0.3, 0.1, -4.75]}
           fontSize={0.2}
           color="white"
           font={`${basePath}/NotoSansJP-Regular.ttf`}
         />
         <VerticalText
           text="市民作品展"
-          position={[1 - 0.3, 0.1, -4.9]}
+          position={[1 - 0.3, 0.1, -4.75]}
           fontSize={0.2}
           color="white"
           font={`${basePath}/NotoSansJP-Regular.ttf`}
         />
         <Box position={[-1, -0.7, -5 + 0.15]} index={"0"} />
-        <Box position={[1, -0.7, -5 + 0.15]} index={"1"}/>
-        {/* <Box position={[-6.025, 1.7, -5 + 0.15]} index={"2"}/> */}
+        <Box position={[1, -0.7, -5 + 0.15]} index={"1"} />
       </Canvas>
     </div>
   );
