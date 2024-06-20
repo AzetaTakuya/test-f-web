@@ -1,11 +1,10 @@
 // components/StartPage.js
 "use client";
-
 import React, { useRef, useEffect, useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import * as THREE from "three";
 import { Canvas, useThree, useFrame, useLoader } from "@react-three/fiber";
-import { OrbitControls, useGLTF } from "@react-three/drei";
+import { OrbitControls, useGLTF, useProgress } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Environment, SpotLight, Text } from "@react-three/drei";
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper.js";
@@ -94,6 +93,7 @@ const CustomSpotLight: React.FC<CustomSpotLightProps> = ({
     />
   );
 };
+
 interface VerticalTextProps {
   text: string;
   position: [number, number, number];
@@ -125,6 +125,7 @@ const VerticalText: React.FC<VerticalTextProps> = ({
     </>
   );
 };
+
 type BoxProps = JSX.IntrinsicElements["mesh"] & { index: string };
 const Box = ({ index, ...props }: BoxProps) => {
   const [hovered, setHover] = useState(false);
@@ -174,11 +175,16 @@ interface VirtualSpaceProps {
 const VirtualSpace: React.FC<ModelProps> = ({ basePath }) => {
   const [backgroundColor, setBackgroundColor] = useState("hsl(0, 0%, 100%)");
 
+  const { progress } = useProgress();
+
+  useEffect(() => {
+    console.log(`Loading progress: ${progress}%`);
+  }, [progress]);
+
   return (
     <div style={{ width: "100vw", height: "100vh", backgroundColor }}>
       <Canvas camera={{ fov: 40 }}>
         <ambientLight intensity={3} />
-        {/* <directionalLight intensity={3} position={[5, 5, -5]} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024}/> */}
         <Environment preset="night" />
         <AreaLight
           position={[0, 2.19, -4.6]}
@@ -213,10 +219,6 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath }) => {
           intensity={1}
           distance={0}
         />
-        {/* <pointLight position={[-1.5, 0, -1.5]} intensity={0} color={0xffffff} /> */}
-        {/* <pointLight position={[1.5, 0, -1.5]} intensity={0} color={0xffffff} /> */}
-        {/* <pointLight position={[-1.5, 0, 1.5]} intensity={0} color={0xffffff} /> */}
-        {/* <pointLight position={[1.5, 0, 1.5]} intensity={0} color={0xffffff} /> */}
         <CustomSpotLight
           position={[-1.5, 2.5, -1.5]}
           targetPosition={[0, -1, 0]}
@@ -285,8 +287,7 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath }) => {
           font={`${basePath}/NotoSansJP-Regular.ttf`}
         />
         <Box position={[-1, -0.7, -5 + 0.15]} index={"0"} />
-        <Box position={[1, -0.7, -5 + 0.15]} index={"1"}/>
-        {/* <Box position={[-6.025, 1.7, -5 + 0.15]} index={"2"}/> */}
+        <Box position={[1, -0.7, -5 + 0.15]} index={"1"} />
       </Canvas>
     </div>
   );
