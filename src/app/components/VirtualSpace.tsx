@@ -180,6 +180,43 @@ const Box = ({ index, ...props }: BoxProps) => {
   );
 };
 
+interface ResizeHandlerProps {
+  containerRef: MutableRefObject<HTMLDivElement | null>;
+  setAspect: React.Dispatch<React.SetStateAction<number>>;
+}
+const ResizeHandler: React.FC<ResizeHandlerProps> = ({ containerRef, setAspect }) => {
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        const width = containerRef.current.clientWidth;
+        const height = containerRef.current.clientHeight;
+        const aspect = Math.min(width / height, 1);
+        setAspect(aspect);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+  }, [containerRef, setAspect]);
+};
+interface SceneProps {
+  aspect: number;
+}
+
+const Scene: React.FC<SceneProps> = ({ aspect }) => {
+  const { camera } = useThree();
+
+  useEffect(() => {
+    camera.fov = Math.min(40 / aspect, 90); // Adjust this formula to fit your needs
+    console.log(camera.fov);
+
+    camera.updateProjectionMatrix();
+  }, [aspect, camera]);
+};
+
+
+
 interface VirtualSpaceProps {
   basePath: string;
   onProgress: (progress: number) => void;
@@ -195,9 +232,14 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath, onProgress }) => {
     }
   }, [progress, onProgress]);
 
+  const containerRef = useRef(null);
+  const [aspect, setAspect] = useState(window.innerWidth / window.innerHeight);
+
   return (
-    <div style={{ width: "100vw", height: "100vh", backgroundColor }}>
+    <div ref={containerRef} style={{ width: "100vw", height: "100vh", backgroundColor }}>
+      <ResizeHandler containerRef={containerRef} setAspect={setAspect} />
       <Canvas camera={{ fov: 40 }}>
+        <Scene aspect={aspect} />
         <ambientLight intensity={3} />
         <Environment preset="night" />
         <AreaLight
