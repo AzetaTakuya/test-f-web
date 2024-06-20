@@ -13,14 +13,15 @@ import { EffectComposer, N8AO } from "@react-three/postprocessing";
 
 interface ModelProps {
   basePath: string;
+  onProgress: (progress: number) => void;
 }
-const Model: React.FC<ModelProps> = ({ basePath }) => {
+const Model: React.FC<ModelProps> = ({ basePath, onProgress }) => {
     const url = `${basePath}/room.glb`;
     const size = 61473688;
 
     const gltf = useLoader(GLTFLoader, `${basePath}/room.glb`, null, (xhr) => {
-        const percentage = (xhr.loaded) / (size) * 100;
-            console.log(percentage.toFixed(0) + '% loaded')
+            const percentage = (Math.min((xhr.loaded) / (size) * 100, 99)).toFixed(0);
+            onProgress(percentage);
         }
     )
 
@@ -189,8 +190,9 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath, onProgress }) => {
   const { progress } = useProgress();
 
   useEffect(() => {
-    console.log(`Loading progress: ${progress}%`);
-    onProgress(progress);
+    if(progress >= 100){
+        onProgress(progress);
+    }
   }, [progress, onProgress]);
 
   return (
@@ -268,7 +270,7 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath, onProgress }) => {
           distance={0}
         />
 
-        <Model basePath={basePath} />
+        <Model basePath={basePath} onProgress={onProgress} />
         <OrbitControls
           maxAzimuthAngle={+120 * (Math.PI / 180)}
           minAzimuthAngle={-120 * (Math.PI / 180)}
