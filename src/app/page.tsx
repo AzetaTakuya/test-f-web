@@ -7,7 +7,7 @@ const BASE_PATH = nextConfig.basePath || "";
 export default function Home() {
   return (
     
-    <main className={`mx-auto nax-w-[1960px] bg-black`}>
+    <main className={`mx-auto nax-w-[1960px] bg-white`}>
       <div className="">
         <div>
           <VirtualSpace basePath={BASE_PATH} />

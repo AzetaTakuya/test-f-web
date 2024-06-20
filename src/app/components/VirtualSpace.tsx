@@ -172,7 +172,7 @@ interface VirtualSpaceProps {
   basePath: string;
 }
 const VirtualSpace: React.FC<ModelProps> = ({ basePath }) => {
-  const [backgroundColor, setBackgroundColor] = useState("hsl(270, 50%, 50%)");
+  const [backgroundColor, setBackgroundColor] = useState("hsl(0, 0%, 100%)");
 
   return (
     <div style={{ width: "100vw", height: "100vh", backgroundColor }}>
