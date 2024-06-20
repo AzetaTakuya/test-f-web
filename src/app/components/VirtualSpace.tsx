@@ -1,6 +1,6 @@
 // components/StartPage.js
 "use client";
-import React, { useRef, useEffect, useState, useMemo } from "react";
+import React, { useRef, useEffect, useState, useMemo, RefObject  } from "react";
 import { useSearchParams } from "next/navigation";
 import * as THREE from "three";
 import { Canvas, useThree, useFrame, useLoader } from "@react-three/fiber";
@@ -19,9 +19,10 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress }) => {
     const url = `${basePath}/room.glb`;
     const size = 61473688;
 
-    const gltf = useLoader(GLTFLoader, `${basePath}/room.glb`, null, (xhr) => {
-            const percentage = ((xhr.loaded) / (size) * 100).toFixed(0);
+    const gltf = useLoader(GLTFLoader, `${basePath}/room.glb`, undefined, (xhr) => {
+            const percentage = parseFloat(((xhr.loaded) / (size) * 100).toFixed(0));
             onProgress(percentage);
+
         }
     )
 
@@ -181,7 +182,7 @@ const Box = ({ index, ...props }: BoxProps) => {
 };
 
 interface ResizeHandlerProps {
-  containerRef: MutableRefObject<HTMLDivElement | null>;
+  containerRef: RefObject<HTMLDivElement>;
   setAspect: React.Dispatch<React.SetStateAction<number>>;
 }
 const ResizeHandler: React.FC<ResizeHandlerProps> = ({ containerRef, setAspect }) => {
@@ -199,6 +200,8 @@ const ResizeHandler: React.FC<ResizeHandlerProps> = ({ containerRef, setAspect }
     window.addEventListener("resize", handleResize);
     handleResize();
   }, [containerRef, setAspect]);
+
+  return <></>;
 };
 interface SceneProps {
   aspect: number;
@@ -206,13 +209,15 @@ interface SceneProps {
 
 const Scene: React.FC<SceneProps> = ({ aspect }) => {
   const { camera } = useThree();
-
   useEffect(() => {
-    camera.fov = Math.min(40 / aspect, 90); // Adjust this formula to fit your needs
-    console.log(camera.fov);
+    const perspectiveCamera = camera as THREE.PerspectiveCamera;
+    perspectiveCamera.fov = Math.min(40 / aspect, 90);
+    console.log(perspectiveCamera.fov);
 
-    camera.updateProjectionMatrix();
+    perspectiveCamera.updateProjectionMatrix();
   }, [aspect, camera]);
+
+  return <></>;
 };
 
 
@@ -232,8 +237,8 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath, onProgress }) => {
     }
   }, [progress, onProgress]);
 
-  const containerRef = useRef(null);
-  const [aspect, setAspect] = useState(window.innerWidth / window.innerHeight);
+  const containerRef: RefObject<HTMLDivElement> = useRef<HTMLDivElement>(null);
+  const [aspect, setAspect] = useState(1);
 
   return (
     <div ref={containerRef} style={{ width: "100vw", height: "100vh", backgroundColor }}>

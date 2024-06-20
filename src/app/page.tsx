@@ -8,9 +8,9 @@ const BASE_PATH = nextConfig.basePath || "";
 export default function Home() {
   const [loading, setLoading] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
-  const progressRef = useRef(null);
+  const progressRef = useRef<HTMLDivElement>(null);
 
-  const handleProgress = (value) => {
+  const handleProgress = (value: number) => {
     console.log(`progress ${value}%`);
     if (progressRef.current) {
       progressRef.current.style.width = `${value}%`;
