@@ -2,19 +2,19 @@
 "use client";
 
 import React, { useRef, useEffect, useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import * as THREE from "three";
 import { Canvas, useThree, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { Environment, SpotLight } from "@react-three/drei";
+import { Environment, SpotLight, Text } from "@react-three/drei";
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper.js";
 import { SpotLight as ThreeSpotLight } from "three";
 import { EffectComposer, N8AO } from "@react-three/postprocessing";
 
-
 interface ModelProps {
-    basePath: string;
-  }
+  basePath: string;
+}
 const Model: React.FC<ModelProps> = ({ basePath }) => {
   const { scene } = useGLTF(`${basePath}/room.glb`);
   return <primitive object={scene} />;
@@ -94,10 +94,83 @@ const CustomSpotLight: React.FC<CustomSpotLightProps> = ({
     />
   );
 };
+interface VerticalTextProps {
+  text: string;
+  position: [number, number, number];
+  fontSize: number;
+  color: string | number;
+  font: string;
+}
+const VerticalText: React.FC<VerticalTextProps> = ({
+  text,
+  position,
+  fontSize,
+  color,
+  font,
+}) => {
+  const characters = text.split("");
+  return (
+    <>
+      {characters.map((char, index) => (
+        <Text
+          key={index}
+          position={[position[0], position[1] - index * fontSize, position[2]]}
+          fontSize={fontSize}
+          color={color}
+          font={font}
+        >
+          {char}
+        </Text>
+      ))}
+    </>
+  );
+};
+type BoxProps = JSX.IntrinsicElements["mesh"] & { index: string };
+const Box = ({ index, ...props }: BoxProps) => {
+  const [hovered, setHover] = useState(false);
+  const [active, setActive] = useState(false);
+
+  const searchParams = useSearchParams();
+  const query = "link" + index;
+  const url = searchParams.get(query);
+
+  const onClick = () => {
+    if (url) {
+      window.open(url, "_self");
+    } else {
+      console.error("URL is null");
+    }
+  };
+  const handlePointerOver = (event: any) => {
+    setHover(true);
+    document.body.style.cursor = "pointer";
+  };
+
+  const handlePointerOut = (event: any) => {
+    setHover(false);
+    document.body.style.cursor = "default";
+  };
+
+  return (
+    <mesh
+      {...props}
+      onClick={onClick}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
+    >
+      <boxGeometry args={[1.4, 2.5, 0.1]} />
+      <meshStandardMaterial
+        color={active ? "red" : hovered ? "blue" : "transparent"}
+        opacity={active || hovered ? 0.2 : 0}
+        transparent
+      />
+    </mesh>
+  );
+};
 
 interface VirtualSpaceProps {
-    basePath: string;
-  }
+  basePath: string;
+}
 const VirtualSpace: React.FC<ModelProps> = ({ basePath }) => {
   const [backgroundColor, setBackgroundColor] = useState("hsl(270, 50%, 50%)");
 
@@ -181,7 +254,7 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath }) => {
           distance={0}
         />
 
-        <Model basePath={basePath}/>
+        <Model basePath={basePath} />
         <OrbitControls
           maxAzimuthAngle={+120 * (Math.PI / 180)}
           minAzimuthAngle={-120 * (Math.PI / 180)}
@@ -197,6 +270,23 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath }) => {
             quality="low"
           />
         </EffectComposer>
+        <VerticalText
+          text="浮世絵デジタル美術展"
+          position={[-1 - 0.3, 0.1, -4.9]}
+          fontSize={0.2}
+          color="white"
+          font={`${basePath}/NotoSansJP-Regular.ttf`}
+        />
+        <VerticalText
+          text="市民作品展"
+          position={[1 - 0.3, 0.1, -4.9]}
+          fontSize={0.2}
+          color="white"
+          font={`${basePath}/NotoSansJP-Regular.ttf`}
+        />
+        <Box position={[-1, -0.7, -5 + 0.15]} index={"0"} />
+        <Box position={[1, -0.7, -5 + 0.15]} index={"1"}/>
+        {/* <Box position={[-6.025, 1.7, -5 + 0.15]} index={"2"}/> */}
       </Canvas>
     </div>
   );
