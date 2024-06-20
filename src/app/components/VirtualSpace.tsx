@@ -212,7 +212,7 @@ const Scene: React.FC<SceneProps> = ({ aspect }) => {
   useEffect(() => {
     const perspectiveCamera = camera as THREE.PerspectiveCamera;
     perspectiveCamera.fov = Math.min(40 / aspect, 90);
-    console.log(perspectiveCamera.fov);
+    // console.log(perspectiveCamera.fov);
 
     perspectiveCamera.updateProjectionMatrix();
   }, [aspect, camera]);
