@@ -15,8 +15,18 @@ interface ModelProps {
   basePath: string;
 }
 const Model: React.FC<ModelProps> = ({ basePath }) => {
-  const { scene } = useGLTF(`${basePath}/room.glb`);
-  return <primitive object={scene} />;
+    const url = `${basePath}/room.glb`;
+    const size = 61473688;
+
+    const gltf = useLoader(GLTFLoader, `${basePath}/room.glb`, null, (xhr) => {
+        const percentage = (xhr.loaded) / (size) * 100;
+            console.log(percentage.toFixed(0) + '% loaded')
+        }
+    )
+
+    return (
+        <primitive object={gltf.scene} />
+    );
 };
 
 interface AreaLightProps {
