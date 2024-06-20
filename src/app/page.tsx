@@ -11,7 +11,7 @@ export default function Home() {
   const progressRef = useRef<HTMLDivElement>(null);
 
   const handleProgress = (value: number) => {
-    console.log(`progress ${value}%`);
+    // console.log(`progress ${value}%`);
     if (progressRef.current) {
       progressRef.current.style.width = `${value}%`;
     }
@@ -19,7 +19,7 @@ export default function Home() {
     if (value >= 101) {
       setFadeOut(true);
       setTimeout(() => setLoading(false), 1000); // 1秒後にロード完了とする
-      console.log('initialized');
+      // console.log('initialized');
     }
   };
 
