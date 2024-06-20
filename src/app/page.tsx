@@ -24,56 +24,17 @@ export default function Home() {
   };
 
   return (
-    <main className={`mx-auto max-w-[1960px] bg-white`}>
+    <main className="mx-auto max-w-[1960px] bg-white">
       {loading && (
-        <div className={`progress-background ${fadeOut ? 'fade-out' : ''}`}>
-          <div className="progress-container">
-            <div id="progress-bar" className="progress-bar" ref={progressRef}></div>
+        <div className={`fixed top-0 left-0 w-screen h-screen bg-white bg-opacity-90 flex justify-center items-center z-50 transition-opacity duration-1000 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
+          <div className="w-4/5 bg-gray-200 rounded overflow-hidden relative h-1">
+            <div ref={progressRef} className="h-full w-0 bg-blue-500 transition-all duration-200"></div>
           </div>
         </div>
       )}
-      <div className="">
-        <div>
-          <VirtualSpace basePath={BASE_PATH} onProgress={handleProgress} />
-        </div>
+      <div>
+        <VirtualSpace basePath={BASE_PATH} onProgress={handleProgress} />
       </div>
-      <style jsx>{`
-        .progress-background {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100vw;
-          height: 100vh;
-          background-color: rgba(255, 255, 255, 0.9);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 9999;
-          transition: opacity 1s ease-in-out;
-          opacity: 1;
-        }
-
-        .fade-out {
-          opacity: 0;
-        }
-
-        .progress-container {
-          width: 80%;
-          background: #eee;
-          border-radius: 5px;
-          overflow: hidden;
-          position: relative;
-          height: 5px;
-        }
-
-        .progress-bar {
-          height: 100%;
-          width: 0%;
-          background: #3b82f6;
-          transition: width 0.2s ease-in-out;
-        }
-      `}
-      </style>
     </main>
   );
 }
