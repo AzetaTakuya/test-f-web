@@ -1,21 +1,24 @@
 "use client"
-import React, { useState } from 'react';
-import Link from 'next/link'
+import React, { useRef, useState } from 'react';
 import VirtualSpace from '@/app/components/VirtualSpace';
-
 import nextConfig from "../../next.config.mjs";
+
 const BASE_PATH = nextConfig.basePath || "";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
+  const progressRef = useRef(null);
 
-  const handleProgress = (progress: number) => {
-    console.log(`${progress}%`);
-    
-    if (progress >= 101) {
+  const handleProgress = (value) => {
+    console.log(`progress ${value}%`);
+    if (progressRef.current) {
+      progressRef.current.style.width = `${value}%`;
+    }
+
+    if (value >= 101) {
       setFadeOut(true);
-      setTimeout(() => setLoading(false), 1000); // フェードアウト時間と一致させる
+      setTimeout(() => setLoading(false), 1000); // 1秒後にロード完了とする
       console.log('initialized');
     }
   };
@@ -23,8 +26,10 @@ export default function Home() {
   return (
     <main className={`mx-auto max-w-[1960px] bg-white`}>
       {loading && (
-        <div className={`spinner-background ${fadeOut ? 'fade-out' : ''}`}>
-          <div className="spinner"></div>
+        <div className={`progress-background ${fadeOut ? 'fade-out' : ''}`}>
+          <div className="progress-container">
+            <div id="progress-bar" className="progress-bar" ref={progressRef}></div>
+          </div>
         </div>
       )}
       <div className="">
@@ -33,41 +38,39 @@ export default function Home() {
         </div>
       </div>
       <style jsx>{`
-        .spinner-background {
+        .progress-background {
           position: fixed;
           top: 0;
           left: 0;
           width: 100vw;
           height: 100vh;
-          background-color: white;
+          background-color: rgba(255, 255, 255, 0.9);
           display: flex;
           justify-content: center;
           align-items: center;
           z-index: 9999;
-          opacity: 1;
           transition: opacity 1s ease-in-out;
+          opacity: 1;
         }
 
         .fade-out {
           opacity: 0;
         }
 
-        .spinner {
-          border: 16px solid #f3f3f3; /* Light grey */
-          border-top: 16px solid #3498db; /* Blue */
-          border-radius: 50%;
-          width: 120px;
-          height: 120px;
-          animation: spin 2s linear infinite;
+        .progress-container {
+          width: 80%;
+          background: #eee;
+          border-radius: 5px;
+          overflow: hidden;
+          position: relative;
+          height: 5px;
         }
 
-        @keyframes spin {
-          0% {
-            transform: rotate(0deg);
-          }
-          100% {
-            transform: rotate(360deg);
-          }
+        .progress-bar {
+          height: 100%;
+          width: 0%;
+          background: #3b82f6;
+          transition: width 0.2s ease-in-out;
         }
       `}
       </style>
