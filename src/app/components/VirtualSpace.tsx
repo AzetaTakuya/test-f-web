@@ -272,14 +272,14 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath }) => {
         </EffectComposer>
         <VerticalText
           text="浮世絵デジタル美術展"
-          position={[-1 - 0.3, 0.1, -4.9]}
+          position={[-1 - 0.3, 0.1, -4.75]}
           fontSize={0.2}
           color="white"
           font={`${basePath}/NotoSansJP-Regular.ttf`}
         />
         <VerticalText
           text="市民作品展"
-          position={[1 - 0.3, 0.1, -4.9]}
+          position={[1 - 0.3, 0.1, -4.75]}
           fontSize={0.2}
           color="white"
           font={`${basePath}/NotoSansJP-Regular.ttf`}
