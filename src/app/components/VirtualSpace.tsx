@@ -6,7 +6,7 @@ import * as THREE from "three";
 import { Canvas, useThree, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { Environment, SpotLight } from "@react-three/drei";
+import { Environment, SpotLight, Text } from "@react-three/drei";
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper.js";
 import { SpotLight as ThreeSpotLight } from "three";
 import { EffectComposer, N8AO } from "@react-three/postprocessing";
@@ -94,6 +94,32 @@ const CustomSpotLight: React.FC<CustomSpotLightProps> = ({
     />
   );
 };
+interface VerticalTextProps {
+    text: string;
+    position: [number, number, number];
+    fontSize: number;
+    color: string | number;
+    font: string;
+  }
+const VerticalText: React.FC<VerticalTextProps> = ({ text, position, fontSize, color, font }) => {
+ 
+    const characters = text.split('');
+    return (
+      <>
+        {characters.map((char, index) => (
+          <Text
+            key={index}
+            position={[position[0], position[1] - index * fontSize, position[2]]}
+            fontSize={fontSize}
+            color={color}
+            font={font}
+          >
+            {char}
+          </Text>
+        ))}
+      </>
+    );
+  }
 
 interface VirtualSpaceProps {
     basePath: string;
@@ -197,6 +223,20 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath }) => {
             quality="low"
           />
         </EffectComposer>
+        <VerticalText
+            text="浮世絵デジタル美術展"
+            position={[-1 - 0.3, 0.1, -4.9]}
+            fontSize={0.2}
+            color="white"
+            font={`${basePath}/NotoSansJP-Regular.ttf`}
+        />
+        <VerticalText
+            text="市民作品展"
+            position={[1 -0.3, 0.1, -4.9]}
+            fontSize={0.2}
+            color="white"
+            font={`${basePath}/NotoSansJP-Regular.ttf`}
+        />
       </Canvas>
     </div>
   );
