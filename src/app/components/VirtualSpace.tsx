@@ -20,7 +20,7 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress }) => {
     const size = 61473688;
 
     const gltf = useLoader(GLTFLoader, `${basePath}/room.glb`, null, (xhr) => {
-            const percentage = (Math.min((xhr.loaded) / (size) * 100, 99)).toFixed(0);
+            const percentage = ((xhr.loaded) / (size) * 100).toFixed(0);
             onProgress(percentage);
         }
     )
@@ -191,7 +191,7 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath, onProgress }) => {
 
   useEffect(() => {
     if(progress >= 100){
-        onProgress(progress);
+        onProgress(101);
     }
   }, [progress, onProgress]);
 

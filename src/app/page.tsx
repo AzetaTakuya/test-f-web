@@ -13,7 +13,7 @@ export default function Home() {
   const handleProgress = (progress: number) => {
     console.log(`${progress}%`);
     
-    if (progress >= 100) {
+    if (progress >= 101) {
       setFadeOut(true);
       setTimeout(() => setLoading(false), 1000); // フェードアウト時間と一致させる
       console.log('initialized');
