@@ -254,7 +254,7 @@ const Box = ({ index, setClick, ...props }: BoxProps) => {
       } else {
         console.error("URL is null");
       }
-    }, 2000);
+    }, 1000);
     
   };
   const handlePointerOver = (event: any) => {
