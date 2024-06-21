@@ -413,8 +413,8 @@ const CustomOrbitControls: React.FC = () => {
   useFrame(() => {
     if (controlsRef.current) {
       const azimuthAngle = controlsRef.current.getAzimuthalAngle();
-      const maxAzimuth = +120 * (Math.PI / 180);
-      const minAzimuth = -120 * (Math.PI / 180);
+      const maxAzimuth = +95 * (Math.PI / 180);
+      const minAzimuth = -95 * (Math.PI / 180);
 
       if (azimuthAngle >= maxAzimuth || azimuthAngle <= minAzimuth) {
         autoRotateSpeedRef.current = -autoRotateSpeedRef.current;
@@ -428,8 +428,8 @@ const CustomOrbitControls: React.FC = () => {
       ref={controlsRef}
       enableZoom={false}
       enablePan={false}
-      maxAzimuthAngle={+120 * (Math.PI / 180)}
-      minAzimuthAngle={-120 * (Math.PI / 180)}
+      maxAzimuthAngle={+95 * (Math.PI / 180)}
+      minAzimuthAngle={-95 * (Math.PI / 180)}
       maxPolarAngle={90 * (Math.PI / 180)}
       minPolarAngle={90 * (Math.PI / 180)}
       autoRotate={false}
