@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { Object3D } from 'three';
 import { Canvas, useThree, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, useGLTF, useProgress } from "@react-three/drei";
+import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Environment, SpotLight, Text } from "@react-three/drei";
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper.js";
@@ -290,6 +291,78 @@ const Scene: React.FC<SceneProps> = ({ aspect }) => {
   return <></>;
 };
 
+const CustomOrbitControls: React.FC = () => {
+  const controlsRef = useRef<OrbitControlsImpl>(null);
+  const autoRotateTimeout = useRef<number | undefined>();
+  const autoRotateSpeedRef = useRef(-2);
+
+  useEffect(() => {
+    const startAutoRotate = () => {
+      if (controlsRef.current) {
+        controlsRef.current.autoRotate = true;
+        controlsRef.current.autoRotateSpeed = autoRotateSpeedRef.current;
+        // controlsRef.current.update();
+      }
+    };
+  
+    const stopAutoRotate = () => {
+      if (controlsRef.current) {
+        controlsRef.current.autoRotate = false;
+        // controlsRef.current.update();
+      }
+      if (autoRotateTimeout.current) {
+        clearTimeout(autoRotateTimeout.current);
+      }
+      autoRotateTimeout.current = window.setTimeout(startAutoRotate, 3000);
+    };
+
+    if (controlsRef.current) {
+      controlsRef.current.addEventListener('start', stopAutoRotate);
+      controlsRef.current.addEventListener('end', stopAutoRotate);
+      
+    }
+    autoRotateTimeout.current = window.setTimeout(startAutoRotate, 2000);
+
+    return () => {
+      if (controlsRef.current) {
+        controlsRef.current.removeEventListener('start', stopAutoRotate);
+        controlsRef.current.removeEventListener('end', stopAutoRotate);
+      }
+      if (autoRotateTimeout.current) {
+        clearTimeout(autoRotateTimeout.current);
+      }
+    };
+  }, [controlsRef]);
+
+  useFrame(() => {
+    if (controlsRef.current) {
+      const azimuthAngle = controlsRef.current.getAzimuthalAngle();
+      const maxAzimuth = +120 * (Math.PI / 180);
+      const minAzimuth = -120 * (Math.PI / 180);
+
+      if (azimuthAngle >= maxAzimuth || azimuthAngle <= minAzimuth) {
+        autoRotateSpeedRef.current = -autoRotateSpeedRef.current;
+        controlsRef.current.autoRotateSpeed = autoRotateSpeedRef.current;
+      }
+    }
+  });
+
+  return (
+    <OrbitControls
+      ref={controlsRef}
+      enableZoom={false}
+      enablePan={false}
+      maxAzimuthAngle={+120 * (Math.PI / 180)}
+      minAzimuthAngle={-120 * (Math.PI / 180)}
+      maxPolarAngle={90 * (Math.PI / 180)}
+      minPolarAngle={90 * (Math.PI / 180)}
+      autoRotate={false}
+      autoRotateSpeed={autoRotateSpeedRef.current}
+      enableDamping={false}
+      rotateSpeed={-1}
+    />
+  );
+};
 
 
 interface VirtualSpaceProps {
@@ -389,12 +462,7 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
         />
 
         <Model basePath={basePath} onProgress={onProgress} isClick0={boxClick0} isClick1={boxClick1} />
-        <OrbitControls
-          maxAzimuthAngle={+120 * (Math.PI / 180)}
-          minAzimuthAngle={-120 * (Math.PI / 180)}
-          maxPolarAngle={90 * (Math.PI / 180)}
-          minPolarAngle={90 * (Math.PI / 180)}
-        />
+        <CustomOrbitControls />
         <EffectComposer>
           <N8AO
             color={"gray"}
