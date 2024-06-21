@@ -44,6 +44,7 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1 
     const url0 = searchParams.get(query0);
     const url1 = searchParams.get(query1);
     const [transition, setTransition] = useState(false);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
 
     useEffect(() => {
@@ -58,8 +59,26 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1 
         }
       }
     }, [gltf]);
+
+    useEffect(() => {
+      if (transition) {
+        timerRef.current = setTimeout(() => {
+          console.log("トランジションクリア！！！");
+          setTransition(false);
+        }, 2000);
+        return () => {
+          if (timerRef.current) {
+            clearTimeout(timerRef.current);
+          }
+        };
+      }
+    }, [transition]);
+  
+
     useFrame(() => {
-      if(transition) return;
+      if(transition) {
+        return;
+      }
       if (isClick0 && modelLink0Ref.current) {
         const rotationSpeed = 0.05;
         const targetRotation = -120 * (Math.PI / 180);
@@ -253,6 +272,48 @@ const Box = ({ index, setClick, ...props }: BoxProps) => {
       onPointerOut={handlePointerOut}
     >
       <boxGeometry args={[1.4, 2.5, 0.1]} />
+      <meshStandardMaterial
+        color={active ? "red" : hovered ? "blue" : "transparent"}
+        opacity={active || hovered ? 0.2 : 0}
+        transparent
+      />
+    </mesh>
+  );
+};
+
+const TransitionBox = ({ index, setClick, ...props }: BoxProps) => {
+  const [hovered, setHover] = useState(false);
+  const [active, setActive] = useState(false);
+
+  const searchParams = useSearchParams();
+  const query = "link" + index;
+  const url = searchParams.get(query);
+
+  const onClick = () => {
+    if (url) {
+      window.open(url, "_self");
+    } else {
+      console.error("URL is null");
+    }
+  };
+  const handlePointerOver = (event: any) => {
+    setHover(true);
+    document.body.style.cursor = "pointer";
+  };
+
+  const handlePointerOut = (event: any) => {
+    setHover(false);
+    document.body.style.cursor = "default";
+  };
+
+  return (
+    <mesh
+      {...props}
+      onClick={onClick}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
+    >
+      <boxGeometry args={[0.1, 1152 / 400, 2048 / 400]} />
       <meshStandardMaterial
         color={active ? "red" : hovered ? "blue" : "transparent"}
         opacity={active || hovered ? 0.2 : 0}
@@ -516,6 +577,8 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
         />
         <Box position={[-1, -0.7, -5 + 0.15]} index={"0"} setClick={setBoxClick0}/>
         <Box position={[1, -0.7, -5 + 0.15]} index={"1"} setClick={setBoxClick1}/>
+        <TransitionBox position={[4.95, 0, 0]} index={"2"} />
+        <TransitionBox position={[-4.95, 0, 0]} index={"3"} />
       </Canvas>
     </div>
   );
