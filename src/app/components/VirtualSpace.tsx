@@ -44,6 +44,7 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1 
     const url0 = searchParams.get(query0);
     const url1 = searchParams.get(query1);
     const [transition, setTransition] = useState(false);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
 
     useEffect(() => {
@@ -58,8 +59,26 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1 
         }
       }
     }, [gltf]);
+
+    useEffect(() => {
+      if (transition) {
+        timerRef.current = setTimeout(() => {
+          console.log("トランジションクリア！！！");
+          setTransition(false);
+        }, 2000);
+        return () => {
+          if (timerRef.current) {
+            clearTimeout(timerRef.current);
+          }
+        };
+      }
+    }, [transition]);
+  
+
     useFrame(() => {
-      if(transition) return;
+      if(transition) {
+        return;
+      }
       if (isClick0 && modelLink0Ref.current) {
         const rotationSpeed = 0.05;
         const targetRotation = -120 * (Math.PI / 180);
