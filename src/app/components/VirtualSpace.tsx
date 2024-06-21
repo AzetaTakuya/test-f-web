@@ -20,8 +20,10 @@ interface ModelProps {
   onProgress: (progress: number) => void;
   isClick0: boolean;
   isClick1: boolean;
+  setClick0: React.Dispatch<React.SetStateAction<boolean>>;
+  setClick1: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1 }) => {
+const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1, setClick0, setClick1 }) => {
     const size = 724384;
 
     const modelLink0Ref = useRef<Object3D | null>(null);
@@ -88,6 +90,7 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1 
           modelLink0Ref.current.rotation.y = targetRotation; 
           if (url0) {
             setTransition(true);
+            setClick0(false);
             window.open(url0, "_self");
           }
         }
@@ -102,6 +105,7 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1 
           modelLink1Ref.current.rotation.y = targetRotation; 
           if (url1){
             setTransition(true);
+            setClick1(false);
             window.open(url1, "_self");
           } 
         }
@@ -550,7 +554,7 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
           distance={0}
         />
 
-        <Model basePath={basePath} onProgress={onProgress} isClick0={boxClick0} isClick1={boxClick1} />
+        <Model basePath={basePath} onProgress={onProgress} isClick0={boxClick0} isClick1={boxClick1} setClick0={setBoxClick0} setClick1={setBoxClick1}/>
         <CustomOrbitControls />
         <EffectComposer>
           <N8AO
