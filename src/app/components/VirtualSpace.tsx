@@ -98,11 +98,11 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1 
         </mesh>
         <mesh position={[-4.98, 0, 0]} rotation={[Math.PI / 180 , Math.PI / 180 * 90, 0]}>
           <planeGeometry args={[2048 / 400, 1152 / 400]} />
-          <meshStandardMaterial map={poster0} transparent={true} castShadow/>
+          <meshStandardMaterial map={poster0} transparent={true} />
         </mesh>
         <mesh position={[4.98, 0, 0]} rotation={[Math.PI / 180 , Math.PI / 180 * -90, 0]}>
           <planeGeometry args={[2048 / 400, 1152 / 400]} />
-          <meshStandardMaterial map={poster1} transparent={true} castShadow/>
+          <meshStandardMaterial map={poster1} transparent={true} />
         </mesh>
       </>
     );
