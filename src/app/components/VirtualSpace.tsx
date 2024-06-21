@@ -11,7 +11,8 @@ import { Environment, SpotLight, Text } from "@react-three/drei";
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper.js";
 import { SpotLight as ThreeSpotLight } from "three";
 import { EffectComposer, N8AO } from "@react-three/postprocessing";
-import { animated, useSpring } from '@react-spring/three';
+import { TextureLoader } from 'three/src/loaders/TextureLoader.js';
+
 
 interface ModelProps {
   basePath: string;
@@ -31,6 +32,8 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1 
             onProgress(percentage);
         }
     )
+    const logo = useLoader(TextureLoader, `${basePath}/logo_FDA.svg`);
+
 
     const searchParams = useSearchParams();
     const query0 = "link0";
@@ -83,9 +86,14 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1 
       }
     });
 
-
     return (
-      <primitive object={gltf.scene} />
+      <>
+        <primitive object={gltf.scene} />
+        <mesh position={[-3.683, 0, -4.85]} rotation={[Math.PI / 180, 0, 0]}>
+          <planeGeometry args={[181 / 130, 54 / 130]} />
+          <meshBasicMaterial map={logo} transparent={true} alphaTest={0.5}/>
+        </mesh>
+      </>
     );
 };
 
