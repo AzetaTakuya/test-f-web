@@ -251,7 +251,7 @@ const Box = ({ index, setClick, ...props }: BoxProps) => {
     setTimeout(() => {
       if (url) {
         // window.open(url, "_self");
-        window.top.location.href = url;
+        if(window.top)window.top.location.href = url;
       } else {
         console.error("URL is null");
       }
@@ -296,7 +296,7 @@ const TransitionBox = ({ index, setClick, ...props }: BoxProps) => {
   const onClick = () => {
     if (url) {
       // window.open(url, "_self");
-      window.top.location.href = url;
+      if(window.top)window.top.location.href = url;
     } else {
       console.error("URL is null");
     }
