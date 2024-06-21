@@ -390,10 +390,16 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
 
         <Model basePath={basePath} onProgress={onProgress} isClick0={boxClick0} isClick1={boxClick1} />
         <OrbitControls
+          enableZoom={false}
+          enablePan={false}
           maxAzimuthAngle={+120 * (Math.PI / 180)}
           minAzimuthAngle={-120 * (Math.PI / 180)}
           maxPolarAngle={90 * (Math.PI / 180)}
           minPolarAngle={90 * (Math.PI / 180)}
+          // autoRotate={true}
+          // autoRotateSpeed={-1}
+          enableDamping={false}
+          rotateSpeed={-1}
         />
         <EffectComposer>
           <N8AO
