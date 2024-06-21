@@ -399,7 +399,7 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
       <ResizeHandler containerRef={containerRef} setAspect={setAspect} />
       <Canvas camera={{ fov: 40 }}>
         <Scene aspect={aspect} />
-        <ambientLight intensity={2} />
+        <ambientLight intensity={2.5} />
         <Environment preset="night" />
         <AreaLight
           position={[0, 2.19, -4.6]}
@@ -431,7 +431,7 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
           color="white"
           angle={1}
           penumbra={0.1}
-          intensity={1.5}
+          intensity={1}
           distance={0}
         />
         <CustomSpotLight
@@ -440,7 +440,7 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
           color="white"
           angle={1}
           penumbra={0.1}
-          intensity={1.5}
+          intensity={1}
           distance={0}
         />
         <CustomSpotLight
@@ -449,7 +449,7 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
           color="white"
           angle={1}
           penumbra={0.1}
-          intensity={1.5}
+          intensity={1}
           distance={0}
         />
         <CustomSpotLight
