@@ -5,7 +5,8 @@ import { useSearchParams } from "next/navigation";
 import * as THREE from "three";
 import { Object3D } from 'three';
 import { Canvas, useThree, useFrame, useLoader } from "@react-three/fiber";
-import {  OrbitControls as DreiOrbitControls, OrbitControlsProps, useGLTF, useProgress } from "@react-three/drei";
+import { OrbitControls, useGLTF, useProgress } from "@react-three/drei";
+import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Environment, SpotLight, Text } from "@react-three/drei";
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper.js";
@@ -291,7 +292,7 @@ const Scene: React.FC<SceneProps> = ({ aspect }) => {
 };
 
 const CustomOrbitControls: React.FC = () => {
-  const controlsRef = useRef<DreiOrbitControls>(null);
+  const controlsRef = useRef<OrbitControlsImpl>(null);
   const autoRotateTimeout = useRef<number | undefined>();
   const autoRotateSpeedRef = useRef(-2);
 
@@ -300,14 +301,14 @@ const CustomOrbitControls: React.FC = () => {
       if (controlsRef.current) {
         controlsRef.current.autoRotate = true;
         controlsRef.current.autoRotateSpeed = autoRotateSpeedRef.current;
-        controlsRef.current.update();
+        // controlsRef.current.update();
       }
     };
   
     const stopAutoRotate = () => {
       if (controlsRef.current) {
         controlsRef.current.autoRotate = false;
-        controlsRef.current.update();
+        // controlsRef.current.update();
       }
       if (autoRotateTimeout.current) {
         clearTimeout(autoRotateTimeout.current);
@@ -318,6 +319,7 @@ const CustomOrbitControls: React.FC = () => {
     if (controlsRef.current) {
       controlsRef.current.addEventListener('start', stopAutoRotate);
       controlsRef.current.addEventListener('end', stopAutoRotate);
+      
     }
     autoRotateTimeout.current = window.setTimeout(startAutoRotate, 2000);
 
@@ -330,7 +332,7 @@ const CustomOrbitControls: React.FC = () => {
         clearTimeout(autoRotateTimeout.current);
       }
     };
-  }, [controlsRef.current]);
+  }, [controlsRef]);
 
   useFrame(() => {
     if (controlsRef.current) {
@@ -346,7 +348,7 @@ const CustomOrbitControls: React.FC = () => {
   });
 
   return (
-    <DreiOrbitControls
+    <OrbitControls
       ref={controlsRef}
       enableZoom={false}
       enablePan={false}
@@ -354,7 +356,7 @@ const CustomOrbitControls: React.FC = () => {
       minAzimuthAngle={-120 * (Math.PI / 180)}
       maxPolarAngle={90 * (Math.PI / 180)}
       minPolarAngle={90 * (Math.PI / 180)}
-      autoRotate={false} // 初期値はfalse
+      autoRotate={false}
       autoRotateSpeed={autoRotateSpeedRef.current}
       enableDamping={false}
       rotateSpeed={-1}
