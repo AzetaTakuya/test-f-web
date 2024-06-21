@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import * as THREE from "three";
 import { Object3D } from 'three';
 import { Canvas, useThree, useFrame, useLoader } from "@react-three/fiber";
-import { OrbitControls, useGLTF, useProgress } from "@react-three/drei";
+import {  OrbitControls as DreiOrbitControls, OrbitControlsProps, useGLTF, useProgress } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Environment, SpotLight, Text } from "@react-three/drei";
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper.js";
@@ -311,6 +311,43 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
   const containerRef: RefObject<HTMLDivElement> = useRef<HTMLDivElement>(null);
   const [aspect, setAspect] = useState(1);
 
+  const controlsRef = useRef<DreiOrbitControls>(null);
+  const autoRotateTimeout = useRef<number | undefined>();
+ 
+  useEffect(() => {
+    const startAutoRotate = () => {
+      if (controlsRef.current) {
+        controlsRef.current.autoRotate = true;
+      }
+    };
+    const stopAutoRotate = () => {
+      if (controlsRef.current) {
+        controlsRef.current.autoRotate = false;
+      }
+      if (autoRotateTimeout.current) {
+        clearTimeout(autoRotateTimeout.current);
+      }
+      autoRotateTimeout.current = window.setTimeout(startAutoRotate, 3000);
+    };
+
+    if (controlsRef.current) {
+      controlsRef.current.addEventListener('start', stopAutoRotate);
+      controlsRef.current.addEventListener('end', stopAutoRotate);
+    }
+    autoRotateTimeout.current = window.setTimeout(startAutoRotate, 2000);
+    return () => {
+      if (controlsRef.current) {
+        controlsRef.current.removeEventListener('start', stopAutoRotate);
+        controlsRef.current.removeEventListener('end', stopAutoRotate);
+      }
+      if (autoRotateTimeout.current) {
+        clearTimeout(autoRotateTimeout.current);
+      }
+    };
+    
+  }, [controlsRef.current]);
+
+
   return (
     <div ref={containerRef} style={{ width: "100vw", height: "100vh", backgroundColor }}>
       <ResizeHandler containerRef={containerRef} setAspect={setAspect} />
@@ -389,15 +426,16 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
         />
 
         <Model basePath={basePath} onProgress={onProgress} isClick0={boxClick0} isClick1={boxClick1} />
-        <OrbitControls
+        <DreiOrbitControls
+          ref={controlsRef}
           enableZoom={false}
           enablePan={false}
           maxAzimuthAngle={+120 * (Math.PI / 180)}
           minAzimuthAngle={-120 * (Math.PI / 180)}
           maxPolarAngle={90 * (Math.PI / 180)}
           minPolarAngle={90 * (Math.PI / 180)}
-          // autoRotate={true}
-          // autoRotateSpeed={-1}
+          autoRotate={false} // 初期値はfalse
+          autoRotateSpeed={-1}
           enableDamping={false}
           rotateSpeed={-1}
         />
