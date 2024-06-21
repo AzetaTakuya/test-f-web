@@ -262,6 +262,48 @@ const Box = ({ index, setClick, ...props }: BoxProps) => {
   );
 };
 
+const TransitionBox = ({ index, setClick, ...props }: BoxProps) => {
+  const [hovered, setHover] = useState(false);
+  const [active, setActive] = useState(false);
+
+  const searchParams = useSearchParams();
+  const query = "link" + index;
+  const url = searchParams.get(query);
+
+  const onClick = () => {
+    if (url) {
+      window.open(url, "_self");
+    } else {
+      console.error("URL is null");
+    }
+  };
+  const handlePointerOver = (event: any) => {
+    setHover(true);
+    document.body.style.cursor = "pointer";
+  };
+
+  const handlePointerOut = (event: any) => {
+    setHover(false);
+    document.body.style.cursor = "default";
+  };
+
+  return (
+    <mesh
+      {...props}
+      onClick={onClick}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
+    >
+      <boxGeometry args={[0.1, 1152 / 400, 2048 / 400]} />
+      <meshStandardMaterial
+        color={active ? "red" : hovered ? "blue" : "transparent"}
+        opacity={active || hovered ? 0.2 : 0}
+        transparent
+      />
+    </mesh>
+  );
+};
+
 interface ResizeHandlerProps {
   containerRef: RefObject<HTMLDivElement>;
   setAspect: React.Dispatch<React.SetStateAction<number>>;
@@ -516,6 +558,8 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
         />
         <Box position={[-1, -0.7, -5 + 0.15]} index={"0"} setClick={setBoxClick0}/>
         <Box position={[1, -0.7, -5 + 0.15]} index={"1"} setClick={setBoxClick1}/>
+        <TransitionBox position={[4.95, 0, 0]} index={"2"} />
+        <TransitionBox position={[-4.95, 0, 0]} index={"3"} />
       </Canvas>
     </div>
   );
