@@ -577,8 +577,8 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
         />
         <Box position={[-1, -0.7, -5 + 0.15]} index={"0"} setClick={setBoxClick0}/>
         <Box position={[1, -0.7, -5 + 0.15]} index={"1"} setClick={setBoxClick1}/>
-        <TransitionBox position={[4.95, 0, 0]} index={"2"} />
-        <TransitionBox position={[-4.95, 0, 0]} index={"3"} />
+        <TransitionBox position={[4.95, 0, 0]} index={"2"} setClick={setBoxClick0} />
+        <TransitionBox position={[-4.95, 0, 0]} index={"3"} setClick={setBoxClick0} />
       </Canvas>
     </div>
   );
