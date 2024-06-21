@@ -290,6 +290,77 @@ const Scene: React.FC<SceneProps> = ({ aspect }) => {
   return <></>;
 };
 
+const CustomOrbitControls: React.FC = () => {
+  const controlsRef = useRef<DreiOrbitControls>(null);
+  const autoRotateTimeout = useRef<number | undefined>();
+  const autoRotateSpeedRef = useRef(-2);
+
+  useEffect(() => {
+    const startAutoRotate = () => {
+      if (controlsRef.current) {
+        controlsRef.current.autoRotate = true;
+        controlsRef.current.autoRotateSpeed = autoRotateSpeedRef.current;
+        controlsRef.current.update();
+      }
+    };
+  
+    const stopAutoRotate = () => {
+      if (controlsRef.current) {
+        controlsRef.current.autoRotate = false;
+        controlsRef.current.update();
+      }
+      if (autoRotateTimeout.current) {
+        clearTimeout(autoRotateTimeout.current);
+      }
+      autoRotateTimeout.current = window.setTimeout(startAutoRotate, 3000);
+    };
+
+    if (controlsRef.current) {
+      controlsRef.current.addEventListener('start', stopAutoRotate);
+      controlsRef.current.addEventListener('end', stopAutoRotate);
+    }
+    autoRotateTimeout.current = window.setTimeout(startAutoRotate, 2000);
+
+    return () => {
+      if (controlsRef.current) {
+        controlsRef.current.removeEventListener('start', stopAutoRotate);
+        controlsRef.current.removeEventListener('end', stopAutoRotate);
+      }
+      if (autoRotateTimeout.current) {
+        clearTimeout(autoRotateTimeout.current);
+      }
+    };
+  }, [controlsRef.current]);
+
+  useFrame(() => {
+    if (controlsRef.current) {
+      const azimuthAngle = controlsRef.current.getAzimuthalAngle();
+      const maxAzimuth = +120 * (Math.PI / 180);
+      const minAzimuth = -120 * (Math.PI / 180);
+
+      if (azimuthAngle >= maxAzimuth || azimuthAngle <= minAzimuth) {
+        autoRotateSpeedRef.current = -autoRotateSpeedRef.current;
+        controlsRef.current.autoRotateSpeed = autoRotateSpeedRef.current;
+      }
+    }
+  });
+
+  return (
+    <DreiOrbitControls
+      ref={controlsRef}
+      enableZoom={false}
+      enablePan={false}
+      maxAzimuthAngle={+120 * (Math.PI / 180)}
+      minAzimuthAngle={-120 * (Math.PI / 180)}
+      maxPolarAngle={90 * (Math.PI / 180)}
+      minPolarAngle={90 * (Math.PI / 180)}
+      autoRotate={false} // 初期値はfalse
+      autoRotateSpeed={autoRotateSpeedRef.current}
+      enableDamping={false}
+      rotateSpeed={-1}
+    />
+  );
+};
 
 
 interface VirtualSpaceProps {
@@ -310,43 +381,6 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
 
   const containerRef: RefObject<HTMLDivElement> = useRef<HTMLDivElement>(null);
   const [aspect, setAspect] = useState(1);
-
-  const controlsRef = useRef<DreiOrbitControls>(null);
-  const autoRotateTimeout = useRef<number | undefined>();
- 
-  useEffect(() => {
-    const startAutoRotate = () => {
-      if (controlsRef.current) {
-        controlsRef.current.autoRotate = true;
-      }
-    };
-    const stopAutoRotate = () => {
-      if (controlsRef.current) {
-        controlsRef.current.autoRotate = false;
-      }
-      if (autoRotateTimeout.current) {
-        clearTimeout(autoRotateTimeout.current);
-      }
-      autoRotateTimeout.current = window.setTimeout(startAutoRotate, 3000);
-    };
-
-    if (controlsRef.current) {
-      controlsRef.current.addEventListener('start', stopAutoRotate);
-      controlsRef.current.addEventListener('end', stopAutoRotate);
-    }
-    autoRotateTimeout.current = window.setTimeout(startAutoRotate, 2000);
-    return () => {
-      if (controlsRef.current) {
-        controlsRef.current.removeEventListener('start', stopAutoRotate);
-        controlsRef.current.removeEventListener('end', stopAutoRotate);
-      }
-      if (autoRotateTimeout.current) {
-        clearTimeout(autoRotateTimeout.current);
-      }
-    };
-    
-  }, [controlsRef.current]);
-
 
   return (
     <div ref={containerRef} style={{ width: "100vw", height: "100vh", backgroundColor }}>
@@ -426,19 +460,7 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
         />
 
         <Model basePath={basePath} onProgress={onProgress} isClick0={boxClick0} isClick1={boxClick1} />
-        <DreiOrbitControls
-          ref={controlsRef}
-          enableZoom={false}
-          enablePan={false}
-          maxAzimuthAngle={+120 * (Math.PI / 180)}
-          minAzimuthAngle={-120 * (Math.PI / 180)}
-          maxPolarAngle={90 * (Math.PI / 180)}
-          minPolarAngle={90 * (Math.PI / 180)}
-          autoRotate={false} // 初期値はfalse
-          autoRotateSpeed={-1}
-          enableDamping={false}
-          rotateSpeed={-1}
-        />
+        <CustomOrbitControls />
         <EffectComposer>
           <N8AO
             color={"gray"}
