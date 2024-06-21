@@ -91,7 +91,7 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1 
         <primitive object={gltf.scene} />
         <mesh position={[-3.683, 0, -4.85]} rotation={[Math.PI / 180, 0, 0]}>
           <planeGeometry args={[181 / 130, 54 / 130]} />
-          <meshBasicMaterial map={logo} transparent={true} alphaTest={0.5}/>
+          <meshBasicMaterial map={logo} transparent={true} />
         </mesh>
       </>
     );
