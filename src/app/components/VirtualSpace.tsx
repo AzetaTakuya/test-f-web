@@ -389,7 +389,7 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
       <ResizeHandler containerRef={containerRef} setAspect={setAspect} />
       <Canvas camera={{ fov: 40 }}>
         <Scene aspect={aspect} />
-        <ambientLight intensity={3} />
+        <ambientLight intensity={2} />
         <Environment preset="night" />
         <AreaLight
           position={[0, 2.19, -4.6]}
