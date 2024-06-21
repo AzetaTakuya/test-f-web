@@ -34,6 +34,8 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1 
         }
     )
     const logo = useLoader(TextureLoader, `${basePath}/logo_FDA.svg`);
+    const poster0 = useLoader(TextureLoader, `${basePath}/art_fes-80.jpg`);
+    const poster1 = useLoader(TextureLoader, `${basePath}/art_joron-80.jpg`);
 
 
     const searchParams = useSearchParams();
@@ -93,6 +95,14 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1 
         <mesh position={[-3.683, 0, -4.85]} rotation={[Math.PI / 180, 0, 0]}>
           <planeGeometry args={[181 / 130, 54 / 130]} />
           <meshBasicMaterial map={logo} transparent={true} />
+        </mesh>
+        <mesh position={[-4.98, 0, 0]} rotation={[Math.PI / 180 , Math.PI / 180 * 90, 0]}>
+          <planeGeometry args={[2048 / 400, 1152 / 400]} />
+          <meshStandardMaterial map={poster0} transparent={true} castShadow/>
+        </mesh>
+        <mesh position={[4.98, 0, 0]} rotation={[Math.PI / 180 , Math.PI / 180 * -90, 0]}>
+          <planeGeometry args={[2048 / 400, 1152 / 400]} />
+          <meshStandardMaterial map={poster1} transparent={true} castShadow/>
         </mesh>
       </>
     );
@@ -389,7 +399,7 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
       <ResizeHandler containerRef={containerRef} setAspect={setAspect} />
       <Canvas camera={{ fov: 40 }}>
         <Scene aspect={aspect} />
-        <ambientLight intensity={3} />
+        <ambientLight intensity={2.5} />
         <Environment preset="night" />
         <AreaLight
           position={[0, 2.19, -4.6]}
@@ -417,6 +427,24 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
         />
         <CustomSpotLight
           position={[0, 2.1, -4.1]}
+          targetPosition={[0, -1, 0]}
+          color="white"
+          angle={1}
+          penumbra={0.1}
+          intensity={1}
+          distance={0}
+        />
+        <CustomSpotLight
+          position={[-4.1, 2.1, 0]}
+          targetPosition={[0, -1, 0]}
+          color="white"
+          angle={1}
+          penumbra={0.1}
+          intensity={1}
+          distance={0}
+        />
+        <CustomSpotLight
+          position={[4.1, 2.1, 0]}
           targetPosition={[0, -1, 0]}
           color="white"
           angle={1}
