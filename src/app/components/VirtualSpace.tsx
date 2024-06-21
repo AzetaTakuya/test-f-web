@@ -250,7 +250,8 @@ const Box = ({ index, setClick, ...props }: BoxProps) => {
     setClick(true);
     setTimeout(() => {
       if (url) {
-        window.open(url, "_self");
+        // window.open(url, "_self");
+        window.top.location.href = url;
       } else {
         console.error("URL is null");
       }
@@ -294,7 +295,8 @@ const TransitionBox = ({ index, setClick, ...props }: BoxProps) => {
 
   const onClick = () => {
     if (url) {
-      window.open(url, "_self");
+      // window.open(url, "_self");
+      window.top.location.href = url;
     } else {
       console.error("URL is null");
     }
@@ -566,14 +568,14 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
         </EffectComposer>
         <VerticalText
           text="浮世絵デジタル美術展"
-          position={[-1 - 0.3, 0.1, -4.75]}
+          position={[-1 - 0.3, 0.1, -4.799]}
           fontSize={0.2}
           color="white"
           font={`${basePath}/NotoSansJP-Regular.ttf`}
         />
         <VerticalText
           text="市民作品展"
-          position={[1 - 0.3, 0.1, -4.75]}
+          position={[1 - 0.3, 0.1, -4.799]}
           fontSize={0.2}
           color="white"
           font={`${basePath}/NotoSansJP-Regular.ttf`}
