@@ -24,7 +24,7 @@ interface ModelProps {
   setClick1: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1, setClick0, setClick1 }) => {
-    const size = 724384;
+    const size = 586824;
 
     const modelLink0Ref = useRef<Object3D | null>(null);
     const modelLink1Ref = useRef<Object3D | null>(null);
@@ -40,11 +40,7 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1,
     const poster1 = useLoader(TextureLoader, `${basePath}/art_joron-80.jpg`);
 
 
-    const searchParams = useSearchParams();
-    const query0 = "link0";
-    const query1 = "link1";
-    const url0 = searchParams.get(query0);
-    const url1 = searchParams.get(query1);
+   
     const [transition, setTransition] = useState(false);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -67,10 +63,16 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1,
         timerRef.current = setTimeout(() => {
           console.log("トランジションクリア！！！");
           setTransition(false);
+          if(modelLink0Ref.current)
+            modelLink0Ref.current.rotation.y = 0;
+          if(modelLink1Ref.current)
+            modelLink1Ref.current.rotation.y = 0;
         }, 2000);
         return () => {
           if (timerRef.current) {
             clearTimeout(timerRef.current);
+            setClick0(false);
+            setClick1(false);
           }
         };
       }
@@ -88,11 +90,8 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1,
           modelLink0Ref.current.rotation.y -= rotationSpeed;
         } else {
           modelLink0Ref.current.rotation.y = targetRotation; 
-          if (url0) {
-            setTransition(true);
-            setClick0(false);
-            window.open(url0, "_self");
-          }
+          setTransition(true);
+          setClick0(false);
         }
       }
 
@@ -103,11 +102,8 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1,
           modelLink1Ref.current.rotation.y -= rotationSpeed;
         } else {
           modelLink1Ref.current.rotation.y = targetRotation; 
-          if (url1){
-            setTransition(true);
-            setClick1(false);
-            window.open(url1, "_self");
-          } 
+          setTransition(true);
+          setClick1(false);
         }
       }
     });
@@ -246,17 +242,20 @@ const Box = ({ index, setClick, ...props }: BoxProps) => {
   const [hovered, setHover] = useState(false);
   const [active, setActive] = useState(false);
 
-  // const searchParams = useSearchParams();
-  // const query = "link" + index;
-  // const url = searchParams.get(query);
+  const searchParams = useSearchParams();
+  const query = "link" + index;
+  const url = searchParams.get(query);
 
   const onClick = () => {
     setClick(true);
-    // if (url) {
-    //   window.open(url, "_self");
-    // } else {
-    //   console.error("URL is null");
-    // }
+    setTimeout(() => {
+      if (url) {
+        window.open(url, "_self");
+      } else {
+        console.error("URL is null");
+      }
+    }, 2000);
+    
   };
   const handlePointerOver = (event: any) => {
     setHover(true);
