@@ -3,6 +3,7 @@
 import React, { useRef, useEffect, useState, useMemo, RefObject  } from "react";
 import { useSearchParams } from "next/navigation";
 import * as THREE from "three";
+import { Object3D } from 'three';
 import { Canvas, useThree, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, useGLTF, useProgress } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
@@ -21,8 +22,8 @@ interface ModelProps {
 const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1 }) => {
     const size = 724384;
 
-    const modelLink0Ref = useRef();
-    const modelLink1Ref = useRef();
+    const modelLink0Ref = useRef<Object3D | null>(null);
+    const modelLink1Ref = useRef<Object3D | null>(null);
     const [rotationCompleted, setRotationCompleted] = useState(false);
 
     const gltf = useLoader(GLTFLoader, `${basePath}/room-compression5.glb`, undefined, (xhr) => {
@@ -287,7 +288,7 @@ interface VirtualSpaceProps {
   basePath: string;
   onProgress: (progress: number) => void;
 }
-const VirtualSpace: React.FC<ModelProps> = ({ basePath, onProgress }) => {
+const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => {
   const [backgroundColor, setBackgroundColor] = useState("hsl(0, 0%, 100%)");
   const [boxClick0, setBoxClick0] = useState(false);
   const [boxClick1, setBoxClick1] = useState(false);
