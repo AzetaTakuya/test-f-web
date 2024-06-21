@@ -10,23 +10,81 @@ import { Environment, SpotLight, Text } from "@react-three/drei";
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper.js";
 import { SpotLight as ThreeSpotLight } from "three";
 import { EffectComposer, N8AO } from "@react-three/postprocessing";
+import { animated, useSpring } from '@react-spring/three';
 
 interface ModelProps {
   basePath: string;
   onProgress: (progress: number) => void;
+  isClick0: boolean;
+  isClick1: boolean;
 }
-const Model: React.FC<ModelProps> = ({ basePath, onProgress }) => {
+const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1 }) => {
     const size = 724384;
 
-    const gltf = useLoader(GLTFLoader, `${basePath}/room-compression4.glb`, undefined, (xhr) => {
+    const modelLink0Ref = useRef();
+    const modelLink1Ref = useRef();
+    const [rotationCompleted, setRotationCompleted] = useState(false);
+
+    const gltf = useLoader(GLTFLoader, `${basePath}/room-compression5.glb`, undefined, (xhr) => {
             const percentage = parseFloat(((xhr.loaded) / (size) * 100).toFixed(0));
             onProgress(percentage);
-
         }
     )
 
+    const searchParams = useSearchParams();
+    const query0 = "link0";
+    const query1 = "link1";
+    const url0 = searchParams.get(query0);
+    const url1 = searchParams.get(query1);
+    const [transition, setTransition] = useState(false);
+
+
+    useEffect(() => {
+      if (gltf) {
+        const modelLink0 = gltf.scene.getObjectByName('link0-door');
+        const modelLink1 = gltf.scene.getObjectByName('link1-door');
+        if (modelLink0) {
+          modelLink0Ref.current = modelLink0;
+        }
+        if(modelLink1){
+          modelLink1Ref.current = modelLink1;
+        }
+      }
+    }, [gltf]);
+    useFrame(() => {
+      if(transition) return;
+      if (isClick0 && modelLink0Ref.current) {
+        const rotationSpeed = 0.05;
+        const targetRotation = -120 * (Math.PI / 180);
+        if (modelLink0Ref.current.rotation.y > targetRotation) {
+          modelLink0Ref.current.rotation.y -= rotationSpeed;
+        } else {
+          modelLink0Ref.current.rotation.y = targetRotation; 
+          if (url0) {
+            setTransition(true);
+            window.open(url0, "_self");
+          }
+        }
+      }
+
+      if (isClick1 && modelLink1Ref.current) {
+        const rotationSpeed = 0.05;
+        const targetRotation = -120 * (Math.PI / 180);
+        if (modelLink1Ref.current.rotation.y > targetRotation) {
+          modelLink1Ref.current.rotation.y -= rotationSpeed;
+        } else {
+          modelLink1Ref.current.rotation.y = targetRotation; 
+          if (url1){
+            setTransition(true);
+            window.open(url1, "_self");
+          } 
+        }
+      }
+    });
+
+
     return (
-        <primitive object={gltf.scene} />
+      <primitive object={gltf.scene} />
     );
 };
 
@@ -137,21 +195,25 @@ const VerticalText: React.FC<VerticalTextProps> = ({
   );
 };
 
-type BoxProps = JSX.IntrinsicElements["mesh"] & { index: string };
-const Box = ({ index, ...props }: BoxProps) => {
+type BoxProps = JSX.IntrinsicElements["mesh"] & { 
+  index: string; 
+  setClick: React.Dispatch<React.SetStateAction<boolean>>;
+};
+const Box = ({ index, setClick, ...props }: BoxProps) => {
   const [hovered, setHover] = useState(false);
   const [active, setActive] = useState(false);
 
-  const searchParams = useSearchParams();
-  const query = "link" + index;
-  const url = searchParams.get(query);
+  // const searchParams = useSearchParams();
+  // const query = "link" + index;
+  // const url = searchParams.get(query);
 
   const onClick = () => {
-    if (url) {
-      window.open(url, "_self");
-    } else {
-      console.error("URL is null");
-    }
+    setClick(true);
+    // if (url) {
+    //   window.open(url, "_self");
+    // } else {
+    //   console.error("URL is null");
+    // }
   };
   const handlePointerOver = (event: any) => {
     setHover(true);
@@ -227,7 +289,8 @@ interface VirtualSpaceProps {
 }
 const VirtualSpace: React.FC<ModelProps> = ({ basePath, onProgress }) => {
   const [backgroundColor, setBackgroundColor] = useState("hsl(0, 0%, 100%)");
-
+  const [boxClick0, setBoxClick0] = useState(false);
+  const [boxClick1, setBoxClick1] = useState(false);
   const { progress } = useProgress();
 
   useEffect(() => {
@@ -316,7 +379,7 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath, onProgress }) => {
           distance={0}
         />
 
-        <Model basePath={basePath} onProgress={onProgress} />
+        <Model basePath={basePath} onProgress={onProgress} isClick0={boxClick0} isClick1={boxClick1} />
         <OrbitControls
           maxAzimuthAngle={+120 * (Math.PI / 180)}
           minAzimuthAngle={-120 * (Math.PI / 180)}
@@ -346,8 +409,8 @@ const VirtualSpace: React.FC<ModelProps> = ({ basePath, onProgress }) => {
           color="white"
           font={`${basePath}/NotoSansJP-Regular.ttf`}
         />
-        <Box position={[-1, -0.7, -5 + 0.15]} index={"0"} />
-        <Box position={[1, -0.7, -5 + 0.15]} index={"1"} />
+        <Box position={[-1, -0.7, -5 + 0.15]} index={"0"} setClick={setBoxClick0}/>
+        <Box position={[1, -0.7, -5 + 0.15]} index={"1"} setClick={setBoxClick1}/>
       </Canvas>
     </div>
   );
