@@ -36,11 +36,22 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1,
         }
     )
     const logo = useLoader(TextureLoader, `${basePath}/logo_FDA.svg`);
-    const poster0 = useLoader(TextureLoader, `${basePath}/art_fes-80.jpg`);
-    const poster1 = useLoader(TextureLoader, `${basePath}/art_joron-80.jpg`);
 
+    const searchParams = useSearchParams();
+    const query_poster2 = "image2";
+    const query_poster3 = "image3";
+    const query_title0 = "title0";
+    const query_title1 = "title1";
+    const poster_url2 = searchParams.get(query_poster2);
+    const poster_url3 = searchParams.get(query_poster3);
+    const title_text0 = searchParams.get(query_title0);
+    const title_text1 = searchParams.get(query_title1);
 
-   
+    // const poster2 = useLoader(TextureLoader, `${basePath}/art_fes-80.jpg`);
+    const poster2 = useLoader(TextureLoader, poster_url2 ? poster_url2 : `${basePath}/art_fes-80.jpg`);
+    const poster3 = useLoader(TextureLoader, poster_url3 ? poster_url3 : `${basePath}/art_joron-80.jpg`);
+    const title0 = title_text0 ? title_text0 : "浮世絵デジタル美術展";
+    const title1 = title_text1 ? title_text1 : "市民作品展";
     const [transition, setTransition] = useState(false);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -77,7 +88,7 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1,
         };
       }
     }, [transition]);
-  
+
 
     useFrame(() => {
       if(transition) {
@@ -89,7 +100,7 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1,
         if (modelLink0Ref.current.rotation.y > targetRotation) {
           modelLink0Ref.current.rotation.y -= rotationSpeed;
         } else {
-          modelLink0Ref.current.rotation.y = targetRotation; 
+          modelLink0Ref.current.rotation.y = targetRotation;
           setTransition(true);
           setClick0(false);
         }
@@ -101,7 +112,7 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1,
         if (modelLink1Ref.current.rotation.y > targetRotation) {
           modelLink1Ref.current.rotation.y -= rotationSpeed;
         } else {
-          modelLink1Ref.current.rotation.y = targetRotation; 
+          modelLink1Ref.current.rotation.y = targetRotation;
           setTransition(true);
           setClick1(false);
         }
@@ -117,12 +128,26 @@ const Model: React.FC<ModelProps> = ({ basePath, onProgress, isClick0, isClick1,
         </mesh>
         <mesh position={[-4.95, 0, 0]} rotation={[0 , Math.PI / 180 * 90, 0]}>
           <planeGeometry args={[2048 / 400, 1152 / 400]} />
-          <meshStandardMaterial map={poster0} transparent={true} />
+          <meshStandardMaterial map={poster2} transparent={true} />
         </mesh>
         <mesh position={[4.95, 0, 0]} rotation={[0 , Math.PI / 180 * -90, 0]}>
           <planeGeometry args={[2048 / 400, 1152 / 400]} />
-          <meshStandardMaterial map={poster1} transparent={true} />
+          <meshStandardMaterial map={poster3} transparent={true} />
         </mesh>
+        <VerticalText
+          text={title0}
+          position={[-1 - 0.3, 0.1, -4.799]}
+          fontSize={0.2}
+          color="white"
+          font={`${basePath}/NotoSansJP-Regular.ttf`}
+        />
+        <VerticalText
+          text={title1}
+          position={[1 - 0.3, 0.1, -4.799]}
+          fontSize={0.2}
+          color="white"
+          font={`${basePath}/NotoSansJP-Regular.ttf`}
+        />
       </>
     );
 };
@@ -234,8 +259,8 @@ const VerticalText: React.FC<VerticalTextProps> = ({
   );
 };
 
-type BoxProps = JSX.IntrinsicElements["mesh"] & { 
-  index: string; 
+type BoxProps = JSX.IntrinsicElements["mesh"] & {
+  index: string;
   setClick: React.Dispatch<React.SetStateAction<boolean>>;
 };
 const Box = ({ index, setClick, ...props }: BoxProps) => {
@@ -256,7 +281,7 @@ const Box = ({ index, setClick, ...props }: BoxProps) => {
         console.error("URL is null");
       }
     }, 1000);
-    
+
   };
   const handlePointerOver = (event: any) => {
     setHover(true);
@@ -380,7 +405,7 @@ const CustomOrbitControls: React.FC = () => {
         // controlsRef.current.update();
       }
     };
-  
+
     const stopAutoRotate = () => {
       if (controlsRef.current) {
         controlsRef.current.autoRotate = false;
@@ -395,7 +420,7 @@ const CustomOrbitControls: React.FC = () => {
     if (controlsRef.current) {
       controlsRef.current.addEventListener('start', stopAutoRotate);
       controlsRef.current.addEventListener('end', stopAutoRotate);
-      
+
     }
     autoRotateTimeout.current = window.setTimeout(startAutoRotate, 2000);
 
@@ -566,20 +591,6 @@ const VirtualSpace: React.FC<VirtualSpaceProps> = ({ basePath, onProgress }) => 
             quality="low"
           />
         </EffectComposer>
-        <VerticalText
-          text="浮世絵デジタル美術展"
-          position={[-1 - 0.3, 0.1, -4.799]}
-          fontSize={0.2}
-          color="white"
-          font={`${basePath}/NotoSansJP-Regular.ttf`}
-        />
-        <VerticalText
-          text="市民作品展"
-          position={[1 - 0.3, 0.1, -4.799]}
-          fontSize={0.2}
-          color="white"
-          font={`${basePath}/NotoSansJP-Regular.ttf`}
-        />
         <Box position={[-1, -0.7, -5 + 0.15]} index={"0"} setClick={setBoxClick0}/>
         <Box position={[1, -0.7, -5 + 0.15]} index={"1"} setClick={setBoxClick1}/>
         <TransitionBox position={[-4.95, 0, 0]} index={"2"} setClick={setBoxClick0} />
